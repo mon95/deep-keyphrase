@@ -2,17 +2,6 @@
 deep-keyphrase
 ==============
 
-Implement some keyphrase generation algorithm
-
-.. image:: https://img.shields.io/github/workflow/status/supercoderhawk/deep-keyphrase/ci.svg
-
-.. image:: https://img.shields.io/pypi/v/deep-keyphrase.svg
-    :target: https://pypi.org/project/deep-keyphrase
-
-.. image:: https://img.shields.io/pypi/dm/deep-keyphrase.svg
-    :target: https://pypi.org/project/pysenal
-
-
 Description
 ===========
 Implemented Paper
@@ -24,17 +13,15 @@ CopyRNN
 
 .. __: https://arxiv.org/abs/1704.06879
 
-
-ToDo List
->>>>>>>>>>>>>>>
-
-CopyCNN
-
-CopyTransformer
-
-
 Usage
 ============
+
+High-level overview of how to use with KPTimes dataset:
+1. Run: setup.py develop
+2. Download the kptimes dataset - https://github.com/ygorg/KPTimes
+3. Build the vocab on the kptimes dataset
+4. Train the model
+5. Generate predictions
 
 required files (4 files in total)
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
