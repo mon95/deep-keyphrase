@@ -2,7 +2,6 @@
 deep-keyphrase
 ==============
 
-
 Implement some keyphrase generation algorithm
 
 .. image:: https://img.shields.io/github/workflow/status/supercoderhawk/deep-keyphrase/ci.svg
@@ -77,6 +76,12 @@ download the kp20k_
     cd data/kp20k/copyrnn_kp20k_basic-20191212-080000
     # start tensorboard services
     tenosrboard --bind_all --logdir logs --port 6006
+
+
+NOTE: 
+=============================
+Code adapted from implementation of the copy RNN introduced by Meng et al., 2017 (Paper: Deep Keyphrase Generation) found here: https://github.com/supercoderhawk/deep-keyphrase
+
 
 Notes
 =============================

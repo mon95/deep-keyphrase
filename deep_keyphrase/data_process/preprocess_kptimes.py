@@ -9,12 +9,12 @@ from multiprocessing import Pool
 from nltk.tokenize import word_tokenize
 from nltk.stem import PorterStemmer
 from pysenal import get_chunk, read_jsonline_lazy, append_jsonlines, write_lines
-from deep_keyphrase.utils.constants import PAD_WORD, UNK_WORD, DIGIT_WORD, BOS_WORD, EOS_WORD, SEP_WORD
+from deep_keyphrase.utils.constants import (PAD_WORD, UNK_WORD, DIGIT_WORD,
+                                            BOS_WORD, EOS_WORD, SEP_WORD)
 
-
-class Kp20kPreprocessor(object):
+class KpTimesPreprocessor(object):
     """
-    kp20k data preprocessor, build the data and vocab for training.
+    kptimes data preprocessor, build the data and vocab for training.
 
     """
     num_and_punc_regex = re.compile(r'[_\-—<>{,(?\\.\'%]|\d+([.]\d+)?', re.IGNORECASE)
@@ -49,7 +49,7 @@ class Kp20kPreprocessor(object):
     def process(self):
         pool = Pool(self.parallel_count)
         tokens = []
-        chunk_size = 100
+        chunk_size = 10
         for item_chunk in get_chunk(read_jsonline_lazy(self.src_filename), chunk_size):
             processed_records = pool.map(self.tokenize_record, item_chunk)
             if self.dest_vocab_path:
@@ -63,7 +63,15 @@ class Kp20kPreprocessor(object):
             write_lines(self.dest_vocab_path, vocab)
 
     def tokenize_record(self, record):
-        abstract_tokens = self.tokenize(record['abstract'], self.is_src_lower, self.is_src_stem)
+        # Crude cut of abstract to save processing time
+        MAX_LEN = 5000
+        abstract_text = record['abstract']
+        if len(record['abstract']) > MAX_LEN:
+            abstract_text = abstract_text[:MAX_LEN]
+
+        abstract_tokens = self.tokenize(abstract_text, self.is_src_lower, self.is_src_stem)
+        abstract_tokens.pop() # Remove potential bogus last token
+
         title_tokens = self.tokenize(record['title'], self.is_src_lower, self.is_src_stem)
         keyword_token_list = []
         for keyword in record['keyword'].split(';'):
@@ -93,21 +101,21 @@ class Kp20kPreprocessor(object):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-src_filename', type=str, required=True,
-                        help='input source kp20k file path')
+                        help='input source kptimes file path')
     parser.add_argument('-dest_filename', type=str, required=True,
                         help='destination of processed file path')
     parser.add_argument('-dest_vocab_path', type=str,
                         help='')
     parser.add_argument('-vocab_size', type=int, default=50000,
                         help='')
-    parser.add_argument('-parallel_count', type=int, default=10)
+    parser.add_argument('-parallel_count', type=int, default=1)
     parser.add_argument('-src_lower', action='store_true')
     parser.add_argument('-src_stem', action='store_true')
     parser.add_argument('-target_lower', action='store_true')
     parser.add_argument('-target_stem', action='store_true')
 
     args = parser.parse_args()
-    processor = Kp20kPreprocessor(args)
+    processor = KpTimesPreprocessor(args)
     processor.process()
 
 
